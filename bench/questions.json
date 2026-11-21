@@ -1,0 +1,88 @@
+{
+  "about": "Kinds of question agents dig for by hand about Ink terminal apps: flicker on redraw, mouse and selection, rows that keep drawing after the work moved on, a test harness that passes while the real app breaks, lag behind keys, Escape delay, a terminal that is not restored. The code questions are put to the small fixture app in bench/fixtures/clacks-ui and name it by path, because the kit otherwise answers about the repository the agent works in; run the bench from the kit's folder. Expectations are what the fixture's code and the kit's playbooks say.",
+  "questions": [
+    {
+      "id": "render-options",
+      "q": "In bench/fixtures, the Ink renderer redraws and sometimes flickers or looks hung under CI. Which render() options does it set, which of the recommended ones are missing, and where is the options object defined?",
+      "expect": [
+        "interactive",
+        "isScreenReaderEnabled",
+        "main\\.tsx:5"
+      ]
+    },
+    {
+      "id": "stdin-tap",
+      "q": "In bench/fixtures, does the Ink renderer read stdin itself for mouse input instead of using useInput? Where does it handle keys?",
+      "expect": [
+        "useInput",
+        "app\\.tsx:6"
+      ]
+    },
+    {
+      "id": "escape-wait",
+      "q": "Escape feels slow in an Ink 8 app. How long does Ink wait on a lone Escape and why? Which playbook section says so, with its line?",
+      "expect": [
+        "20 ?ms",
+        "mouse-selection\\.md:\\d+"
+      ]
+    },
+    {
+      "id": "restore-exit",
+      "q": "In bench/fixtures, which handlers restore the terminal when the Ink renderer exits on a crash or a signal, and which are missing?",
+      "expect": [
+        "main\\.tsx:9",
+        "uncaughtException|unhandledRejection"
+      ]
+    },
+    {
+      "id": "tests-pass-real-breaks",
+      "q": "In bench/fixtures, which of the testing playbook's contract checks does the Ink test suite have, and which test files use ink-testing-library with its fixed 100 columns?",
+      "expect": [
+        "app\\.test\\.tsx",
+        "100 columns",
+        "contract"
+      ]
+    },
+    {
+      "id": "console-static",
+      "q": "In bench/fixtures, does the Ink app call console.log or use Static, and why is that a problem on the alternate screen?",
+      "expect": [
+        "app\\.tsx:10",
+        "Static",
+        "app\\.tsx:(2|13)"
+      ]
+    },
+    {
+      "id": "storybook-spins",
+      "q": "What stops a story of an Ink component from spinning forever in the static Storybook build?",
+      "expect": [
+        "yoga",
+        "top-level await"
+      ]
+    },
+    {
+      "id": "render-options-shot",
+      "do": "render-options",
+      "params": {
+        "repo": "bench/fixtures"
+      },
+      "expect": [
+        "\"interactive\"",
+        "isScreenReaderEnabled",
+        "main\\.tsx:5"
+      ]
+    },
+    {
+      "id": "faults-shot",
+      "do": "faults",
+      "params": {
+        "repo": "bench/fixtures"
+      },
+      "expect": [
+        "tests-100-columns",
+        "render-option:interactive",
+        "setup-fullscreen\\.md:\\d+"
+      ]
+    }
+  ]
+}

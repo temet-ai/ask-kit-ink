@@ -1,0 +1,57 @@
+id = "temet.ink"
+name = "ink"
+version = "0.1.0"
+min_ask_kit = "0.2.0"
+requires = ["node"]
+says = "building and checking Ink 8 terminal apps (React in the terminal, usually a child process a Rust host drives over IPC), from six playbooks and the app's own code: how to do something the way the playbooks say (render options and why, sizing the root, the full-clear path, Static and console traps, resize, Ctrl+C, suspend and restore, esbuild bundling; keys, the Escape wait, kitty keyboard, bracketed paste, why Ink drops mouse reports and reading stdin yourself, selection, OSC 52, OSC 8, OSC 22; frame time, windowing, fewer Text nodes, painting onto the finished frame; testing with stub streams, renderToString, FORCE_COLOR and CI, contract tests, byte budgets, pty tests, a live tmux check; Storybook for Ink; splitting a TUI into a Rust host and parts), and what a given Ink app does against that: its render() options, whether it reads stdin itself, console or Static in a full-screen app, Text nodes per row, whether it restores the terminal, Ink and React versions, how it is bundled, what its tests cover, whether the host and the renderer agree on IPC message types; and acting on it (apply a render option, fix a fault, add a test)"
+keywords = ["ink", "ink 8", "useInput", "usePaste", "render\\(", "alternateScreen", "incrementalRendering", "patchConsole", "exitOnCtrlC", "maxFps", "<Static>", "ink-testing-library", "renderToString", "stdin tap", "bracketed paste", "kitty keyboard", "osc ?52", "ink renderer", "tui", "terminal app"]
+route_hint = "an Ink renderer: how to build or fix one the way the ink playbooks say (render options, full screen, keys, mouse, selection, paste, flicker, lag behind keys, Escape delay, terminal not restored, tests that pass while the real app misbehaves) and what its code does against that is ink; running the package's tests, typecheck, build or installing dependencies is npm; the Storybook itself (which stories exist, whether one renders, a screenshot) is storybook; Rust host code, cargo and the crates are rust; what code does in general, or where something is defined, is code; commits are git; what a past session did with Ink is sessions"
+cite = "`path:line` of the playbook section (skills/setup-fullscreen.md:N) and of the app's code (ink/src/main.tsx:56)"
+instructions = "instructions.md"
+state_key = "${INK_REPO}"
+acts = [
+  "editing the renderer's source to apply a fix from the playbooks (render options, input handling, restore sequence, bundle script, Text nodes per row)",
+  "adding or editing test files, stub streams, fixtures and the package.json test and bundle scripts",
+  "installing or updating packages, running the tests, the typecheck or the build (belongs to the npm kit)",
+]
+
+[[settings]]
+key = "INK_REPO"
+about = "the repository to answer about: the git root above the folder the agent works in, or that folder when there is no git root. The renderer package is found inside it (a package.json depending on ink, up to five levels down)"
+detect = ["node", "-e", "const fs=require('fs'),p=require('path');let d=process.cwd();for(;;){if(fs.existsSync(p.join(d,'.git'))){console.log(d);process.exit()}const u=p.dirname(d);if(u===d)break;d=u}console.log(process.cwd())"]
+
+[[settings]]
+key = "SKILLS_DIR"
+about = "optional: a folder holding your own skill folders named ink-fullscreen, ink-input, ink-frame-performance, ink-testing, ink-storybook or host-parts-tui (each with a SKILL.md). One found there is read at run time instead of the kit's playbook on the same subject; empty uses the kit's playbooks only"
+default = ""
+
+[[sources]]
+kind = "module"
+name = "ink"
+module = "ink.mjs"
+api = "api.d.ts"
+
+[[sources]]
+kind = "folder"
+name = "repo"
+path = "${INK_REPO}"
+about = "the repository's source: the Ink renderer, its tests, and the Rust host beside it. Search, read and (when the ask may change things) edit"
+# Credentials, lockfiles and build output are never searched or read: what the investigator reads goes to a model.
+exclude = [
+  ".env", ".env.*", "*.env", ".npmrc", ".yarnrc", ".yarnrc.yml", ".pnpmrc", ".netrc", "*.pem", "*.key", "*token*", "*secret*", "*credential*", "id_rsa*", "id_ed25519*", "auth.json", "*.sock",
+  "node_modules/**", "**/node_modules/**", ".yarn/**", ".pnpm-store/**", "target/**", "**/target/**", "worktrees/**", "**/worktrees/**",
+  "package-lock.json", "npm-shrinkwrap.json", "pnpm-lock.yaml", "yarn.lock", "bun.lock", "bun.lockb", "Cargo.lock",
+  "dist/**", "**/dist/**", "build/**", "out/**", "coverage/**", ".cache/**", ".vite/**", "storybook-static/**", "**/storybook-static/**", "*.tsbuildinfo", "*.min.js", "*.map",
+]
+
+[[roles]]
+name = "ink-specialist"
+when = "a how-to or why question about building an Ink 8 full-screen app: render options, sizing, keys, mouse, paste, selection, flicker, lag, Escape delay, restore, bundling, tests, Storybook, the host and parts split"
+patterns = ["\\bhow (do|can|should) (i|we)\\b.*\\bink\\b", "\\bwhy (does|is|do)\\b.*\\b(flicker|lag|escape|paste|mouse|deaf|ink)\\w*", "\\b(useInput|usePaste|patchConsole|alternateScreen|incrementalRendering|exitOnCtrlC)\\b"]
+instructions = "roles/ink-specialist.md"
+
+[[roles]]
+name = "ink-inspector"
+when = "a request to check, review or audit an Ink app against the playbooks, find what it gets wrong, or fix a fault or add a test in its renderer"
+patterns = ["\\b(check|audit|review|inspect|fix)\\b.*\\bink\\b", "\\bwhat (does|is) (the|this|our) (ink )?(app|renderer)\\b", "\\bwhich render options\\b"]
+instructions = "roles/ink-inspector.md"
